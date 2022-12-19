@@ -1,1 +1,1 @@
-# GPUAG-article
+# master-project-notes
