@@ -24,6 +24,7 @@
 \usepackage{titling}
 \usepackage{blindtext}
 \usepackage{titlesec}
+\usepackage{subcaption}
 
 \usetikzlibrary{positioning}
 
@@ -47,6 +48,7 @@
 }
 
 \titleformat*{\section}{\large\bfseries}
+\titleformat*{\subsection}{\normalsize\bfseries}
 
 \addbibresource{main.bib}
 % STUFF END
@@ -68,6 +70,7 @@
 \input{sections/discussion.tex}
 
 % Bibliography
-%\printbibliography
+\newpage
+\printbibliography
 
 \end{document}

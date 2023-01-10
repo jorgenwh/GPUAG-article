@@ -1,1 +1,6 @@
 \section*{Discussion}
+I have here presented two new Python packages, CuCounter and CuStats, providing GPU support for typical computational tasks performed in genotyping.
+Both packages are works in process, and changes are overwhelmingly likely to be made to both.
+
+Interesting future work may reside in optimizing the underlying CUDA hashtable of the CuCounter counter object. 
+While this table is a useful tool for anyone who wants to count kmer frequencies with GPU support in Python, it is not meant to compete with potentially faster CUDA hashtables existing elsewhere, even for kmer counting.

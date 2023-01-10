@@ -1,5 +1,13 @@
 \section*{Introduction}
 
 Genotyping is a prominent application of the massive amounts of data provided by high-throughput sequencing. 
-Recent developments in graph and alignment-free methods of genotyping have resulted in genotyping methods yielding competitive accuracies with significantly reduced time costs.
-Some state-of-the-art genotypers of this kind perform most of their process in the form of array-operations. This has naturally led to array-libraries such as NumPy to be utilized for performant implementations.
+Recent developments in graph and alignment-free methods of genotyping have resulted in genotyping methods yielding competitive accuracies with significantly reduced time costs compared with their alignment-based counterparts.
+Despite these strides, the cost of genotyping in terms of computing power is still high.
+As a result, many genotyping tools are implemented using verbose, low-level programming languages such as C and C++ where the programmers need to have in-depth understanding of both hardware and low-level programming tools to create competitive solutions.
+However, some recent graph and alignment-free genotypers perform most of their computation in the form of array-operations. 
+This has led to a more desireable approach, namely using array-libraries such as NumPy \cite{numpy} to create performant solutions in Python where the programmer can enjoy the programmatic simplicity of Python as well as the speed of carefully optimized C code.
+While some options such as CuPy \cite{cupy} exist to perform NumPy-like array-operations on the GPU (Graphical Processing Unit) in Python, they sometimes fall short of the desired speed increase required for a worthwhile investment in a GPU because the Python interface fails to sufficiently optimize certain operations such as nested array-expressions.
+Here I present two Python packages that try to circumvent this problem by providing implementations of specific functionalities used in genotyping, rather than general purpose solutions.
+1) \textbf{CuCounter}: a NumPy and CuPy compatible kmer frequency counter object implemented in CUDA, allowing for fast kmer frequency counting given a set of predefined kmers.
+2) \textbf{CuStats}: a NumPy and CuPy compatible statistics module with array-expressions commonly used in genotyping.
+
