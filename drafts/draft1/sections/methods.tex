@@ -1,0 +1,28 @@
+\section*{Implementation details}
+Both CuCounter and CuStats are designed to be compatible with both NumPy and CuPy.
+Both NumPy and CuPy are in fact prerequisites for CuCounter and CuStats, as the supported features in both packages currently only interact with NumPy and CuPy arrays.
+All current features in both packages will accept both NumPy and CuPy arrays and will always return arrays of the same type as the input.
+When NumPy arrays are used, both packages will handle copying of the underlying array data to and from the GPU.
+Naturally, using CuPy arrays will result in significantly better performance, as their underlying data will already reside in GPU memory.
+
+\subsection*{CuCounter's underlaying hashtable}
+The underlaying hashtable used in the CuCounter's counter object follows a simple open addressing with linear probing scheme. 
+When an array of 64-bit encoded kmers are provided, each kmer is inserted by a single block thread in a kernel call. 
+The thread will deploy a simple linear probing scheme and search the hashtable for either an empty position, or a position occupied by the provided kmer.
+In this search, the initial position $p_i$ for kmer $k$ is found by computing
+\begin{equation}
+  p_i=hash(k) \bmod c
+\end{equation}
+and every consecutive position $p_{c+1}$ following position $p_c$ is determined by computing
+\begin{equation}
+  p_{c+1}=(p_c+1) \bmod c
+\end{equation}
+where $hash$ is a murmur hash function and $c$ is the hashtable's capacity.
+The search terminates when either $k$ or an empty slot is observed in the hashtable.
+For both insertion (during initialization) and counting, CUDA atomic operators are used to ensure validity.
+
+\subsection*{CuStats functionality}
+The CuStats package is meant to be a collection of useful statistical functions used in (graph and alignment-free based) genotyping.
+While these functions can be effortlessly implemented using NumPy, and thereby CuPy to leverage the GPU, their performance suffer because of the general-purpose nature of NumPy and CuPy.
+For instance, when creating nested array-expressions, CuPy will often perform many temporary array allocations, and needlessly move data back and fourth between registers and global memory.
+Both of these problems are circumvented in CuStats by implementing targeted kernels where the entirity of the expressions can be efficiently computed.
