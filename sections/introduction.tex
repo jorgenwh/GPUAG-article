@@ -8,4 +8,6 @@ However, some recent graph and alignment-free genotypers perform most of their c
 This has led to a more desireable approach, namely using array-libraries such as NumPy \cite{numpy} to create performant solutions in Python where the programmer can enjoy the programmatic simplicity of Python as well as the speed of carefully optimized C code.
 One such genotyping tool is the current state-of-the-art graph-based and alignment-free genotyper KAGE \cite{kage}, which is written in Python and heavily leverages NumPy.
 We have taken KAGE as a basis and developed a GPU supported version, GKAGE, showing that genotyping tools performing most of their compute as array-operations can benefit greatly from GPU support.
+This was achieved by examining KAGE to find bottlenecks in its compute pipeline, and then creating GPU supported drop-in alternatives.
+
 
