@@ -1,0 +1,18 @@
+\subsection*{CuCounter's underlying hash table}
+The underlying hash table used in CuCounter's counter object follows a simple open addressing with linear probing scheme.
+When an array of 64-bit integer encoded kmers are provided for either insertion, counting or lookup, each kmer is handled by a single CUDA thread.
+
+%and every consecutive position $p_{c+1}$ following position $p_c$ is determined by computing
+
+\noindent\begin{minipage}{.495\linewidth}
+\begin{equation}
+  p_i=hash(k) \bmod c
+\end{equation}
+\end{minipage}
+\begin{minipage}{.5\linewidth}
+\begin{equation}
+  p_{c+1}=(p_c+1) \bmod c
+\end{equation}
+\end{minipage}
+
+

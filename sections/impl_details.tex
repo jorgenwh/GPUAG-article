@@ -15,3 +15,5 @@ and every consecutive position $p_{c+1}$ following position $p_c$ is determined 
 where $hash$ is a murmur hash function and $c$ is the hashtable's capacity.
 The search terminates when either $k$ or an empty slot is observed in the hashtable.
 For both insertion (during initialization) and counting, CUDA atomic operators are used to ensure validity.
+
+\input{sections/subsections/cucounter_hashtable.tex}
