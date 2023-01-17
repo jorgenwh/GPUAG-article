@@ -1,0 +1,17 @@
+\section*{Implementation details}
+
+\subsection*{CuCounter's underlying hash table}
+The underlying hash table used in CuCounter's counter object follows a simple open addressing with linear probing scheme.
+When an array of 64-bit integer encoded kmers are provided, each kmer is handled by a single CUDA thread in a kernel call.
+The threads, all employed to either insert (during initialization) or search for (during counting and lookup) a single kmer, will deploy a simple linear probing scheme and search the hash table for either an empty position, or a position occupied by the provided kmer.
+In this search, the initial position $p_i$ for kmer $k$ is found by computing
+\begin{equation}
+  p_i=hash(k) \bmod c
+\end{equation}
+and every consecutive position $p_{c+1}$ following position $p_c$ is determined by computing
+\begin{equation}
+  p_{c+1}=(p_c+1) \bmod c
+\end{equation}
+where $hash$ is a murmur hash function and $c$ is the hashtable's capacity.
+The search terminates when either $k$ or an empty slot is observed in the hashtable.
+For both insertion (during initialization) and counting, CUDA atomic operators are used to ensure validity.

@@ -1,23 +1,23 @@
 \section*{Implementing GPU support for KAGE}\label{impl}
 In order to prioritize which components in KAGE to implement GPU support for, the genotyping pipeline was examined in order to find bottlenecks that seemed appropriate to outsource to the GPU.
-For example, if a component performs many large array computations, this would be deemed desirable to outsource to the GPU as it fits the type of compute work that GPUs are especially designed to be superior for.
+For example, if a component performed many large array computations, it would be deemed appropriate for outsourcing to the GPU as it would be fitting of the type of compute work that GPUs are especially designed to be superior for.
 Three components were identified and have had GPU supported alternatives implemented.
 
-\textbf{Reading and encoding kmers} from a fasta file was achieved in KAGE by using BioNumPy \cite{bionumpy}, a Python library built on top of npstructures \cite{npstructures} and NumPy \cite{numpy}.
-BioNumPy uses NumPy to efficiently read chunks of reads from the fasta file, encode the bases to a 2-bit representation, and then encode the valid kmers as 64-bit integer representations in an array.
-In order to add GPU support to this step, we utilized CuPy \cite{cupy} as a drop-in replacement for NumPy.
+\textbf{Reading and encoding kmers} from fasta files is achieved in KAGE by using BioNumPy \cite{bionumpy}, a Python library built on top of npstructures \cite{npstructures} and NumPy \cite{numpy}.
+BioNumPy uses NumPy to efficiently read chunks of DNA reads from fasta files, encode the bases to a 2-bit representation, and then encode the valid kmers as 64-bit integer representations in an array.
+In order to add GPU support to this step, I utilized CuPy \cite{cupy}, a GPU accelerated alternative to NumPy, as a drop-in replacement for NumPy.
 This was achieved by adding a function to the BioNumPy module that replaces all relevant NumPy modules in BioNumPy's sub-modules, with CuPy.
 This yielded GPU support (and significant speedup) to the reading and encoding of kmers in BioNumPy, all while preserving the BioNumPy code and without having to implement complicated GPU kernels ourselves.
 
-\textbf{Counting kmer frequencies} observed in the encoded kmer chunks from the previous step received GPU support through a Python counter object that uses a backend parallel hash table implemented in CUDA.
+\textbf{Counting kmer frequencies} observed in the encoded kmer chunks from the previous step has received GPU support through a Python counter object that is built on top of a parallel hash table implemented in CUDA.
 The Python counter object provides an API consisting of the following:
-1) \textit{initialization} from a predefined set of kmers, 
-2) \textit{counting} subsequent kmer frequencies by receiving iterations of chunks of kmers, and 
-3) \textit{lookup} of observed kmer frequencies provided a set of kmers to look up.
-All kmers provided to the counter for any of the three operations can either be a NumPy or CuPy array, although CuPy arrays are preferred to circumvent having to copy data to and from the GPU memory.
+1) \textit{initialization} from either a NumPy or a CuPy array of 64-bit encoded kmers,
+2) \textit{counting} of kmer frequencies observed in either a NumPy or CuPy array of 64-bit encoded kmers where observed kmers not present in the initialization array are ignored,
+3) \textit{lookup} of observed kmer frequencies provided a NumPy or CuPy array of 64-bit encoded kmers to look up.
+Whilst the entire API supports both NumPy and CuPy arrays, CuPy is preferred as it circumvents the need to copy data to and from the GPU memory.
 
 \textbf{Computing the log of the probability mass function} for many large arrays was perhaps one of the most GPU suited tasks in KAGE.
 Since KAGE's native implementation uses NumPy, one option would be to use CuPy as a drop-in replacement for these array-operations. 
 However, these array-operations happened through several nested steps, resulting in several unnecessary and significant memory allocations both when using NumPy and CuPy.
-Therefore, we implemented a targeted kernel performing this compute efficiently in CUDA.
+Therefore, I implemented a targeted kernel performing this compute efficiently in CUDA.
 
